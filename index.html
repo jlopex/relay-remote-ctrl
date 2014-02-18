@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <script src="jquery-1.4.2.js" type="text/javascript"></script>
+    <script src="client.js" type="text/javascript"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+
+  <body>
+
+    <div id="app"> 
+      <div id="execute"> 
+        <form action="#"> 
+          <fieldset> 
+            <p>This website allows you to control your remote relays.</p>
+	    <p>Accepted commands are: ON/OFF [relay_id].</p> 
+	    <p>If you want to get the current temperature just write TEMP. </p> 
+	    <p>For Relay status just write STATUS. </p> 
+            <label for="cmd">Command:</label> 
+            <input id="cmdInput" class="text" type="text" name="cmd" value=""></input> 
+            <input id="sendButton" class="button" type="submit" name="" value="Send" ></input> 
+          </fieldset> 
+        </form> 
+      </div>
+    </div>
+
+    <div id="response">
+      <ul id="status">
+        <li><p id="resVal"></p></li>
+      </ul>
+    </div>
+  </body>
+</html>
