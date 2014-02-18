@@ -1,7 +1,7 @@
 {
   "name": "relay-remote-ctrl",
   "version": "0.0.1",
-  "description": "Simple nodejs application to control TOSR0X-T devices through USB",
+  "description": "Simple nodejs web application to control TOSR0X-T devices through USB",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
