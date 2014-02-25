@@ -30,7 +30,9 @@ $('#sendButton').live('click', function(e) {
 	if (strArr.length > 2 || 
 	    (strArr.length == 1 &&
 	     strArr[0] != 'TEMP' && 
-	     strArr[0] != 'STATUS')) {
+	     strArr[0] != 'STATUS' &&
+	     strArr[0] != 'ON' &&
+             strArr[0] != 'OFF')) {
 		alert('unexpected command');
 		return false;
 	}
@@ -55,10 +57,18 @@ $('#sendButton').live('click', function(e) {
 		}
 	}
 
-	/* Send command event */
-	App.config.socket.emit('command', {
-		'cmd': strArr[0],
-		'arg': strArr[1]});
+	if (strArr.length == 1) {
+		/* Send command event */
+		App.config.socket.emit('command', {
+			'cmd': strArr[0],
+			'arg': "0"});
+	} else {
+
+		/* Send command event */
+		App.config.socket.emit('command', {
+			'cmd': strArr[0],
+			'arg': strArr[1]});
+	}
 
 	return false;
 
