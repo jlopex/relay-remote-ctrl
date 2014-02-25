@@ -78,7 +78,7 @@ $('#sendButton').live('click', function(e) {
 
 App.connectIoSocket = function () {
 
-	App.config.socket = io.connect('http://127.0.0.1:8002');
+	App.config.socket = io.connect(window.location.hostname);
 
 	/* We got a connection confirmation event */
 	App.config.socket.on('connected', function(data) {
