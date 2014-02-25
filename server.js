@@ -32,8 +32,6 @@ var io = sio.listen(server);
 
 /* define serial port */
 
-/* TODO: Test serial port 
-
 var serialPort = serial.SerialPort;
 var sp = new serialPort(portName, {
 	baudRate: 9600,
@@ -43,9 +41,8 @@ var sp = new serialPort(portName, {
 	flowControl: false
 });
 
-*/
 
-function writeCmdToSerial (data) {
+function writeCmdToSerial (socket, data) {
 	var dec = 0;
 
 	if (data['cmd'] == 'STATUS') {
@@ -59,59 +56,68 @@ function writeCmdToSerial (data) {
 	} 
 	console.log('DEC: ' + dec + ' HEX: 0x' + dec.toString(16));
 
-/* TODO: Test serial port
-	 * NOT SURE IF WE NEED TO CONVERT TO HEX
-
-	sp.write(dec.toString(16), function (err, bytesWritten) {
-		console.log('bytes written:', bytesWritten);
-	});
-
-*/
+	sp.write(String.fromCharCode(dec), function (err, bytesWritten) {
+                console.log('bytes written:', bytesWritten);
+        });
 }
 
+function pad(width, string, padding) {
+	return (width <= string.length) ? string : pad(width, padding + string, padding)
+}
 
 /* IO (socket and serial) event handler */
-io.sockets.on('connection', function(socket){
+io.sockets.on('connection', function(socket) {
+	var req_data;
+	var buffer = '';
 	console.log("Socket connected");
 	socket.emit('connected', 123);
 
 	/* IO socket command event */
 	socket.on('command', function(data) {
+		req_data = data;
 		console.log("Received command: " + data['cmd']);
 		console.log("Received command: " + data['arg']);
-		//console.log(json.toString());
-		//console.log(json['cmd']);
-		//writeCmdToSerial(data);
-		socket.emit('response', data['cmd']);
+		writeCmdToSerial(socket, data);
 	});
 
-/* TODO: Test serial port
-	
-	/* Serial port data event   
+	/* Serial port data event */
 	sp.on('data', function (data) {
-		console.log(data);
-		var sOut = new Buffer(data, 'utf')
-		console.log(sOut);
-		mbRec = sOut.toString('hex');
-		console.log(sOut);
-		socket.emit('response', sOut);
+
+		if (req_data == null)
+			return;
+
+		console.log("Received serial data: " + data);
+		buffer += data.toString()
+		/* TEMP returns as char array */
+		if (req_data['cmd'] == 'TEMP' &&
+		    buffer.indexOf('\n') === -1)
+			return;
+
+		if (req_data['cmd'] == 'STATUS') {
+			var dec = data.readUInt8(0)
+			var binStr = parseInt(dec).toString(2);
+			buffer = pad(8, binStr, '0');
+		}
+
+		socket.emit('response', buffer);
+		buffer = '';
+		req_data = null;
 	});
  
-	/* Serial port close event 
+	/* Serial port close event */
 	sp.on('close', function (err) {
 		console.log('serial port has been closed');
 	});
  
-	/* Serial port error event 
+	/* Serial port error event */
 	sp.on('error', function (err) {
 		console.error("serial port error", err);
 	});
  
-	/* Serial port open event 
+	/* Serial port open event */
 	sp.on('open', function () {
 		console.log('serial port has been opened');
 	});
-*/
 });
 
 /* Start listening on PORT */
