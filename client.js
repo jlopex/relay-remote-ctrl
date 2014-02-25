@@ -5,7 +5,7 @@ MAX_RELAYS = 8;
 var App = App || {};
 
 App.config = {
-	socket: null,
+
 };
 
 /* Send button click handler */
@@ -58,40 +58,47 @@ $('#sendButton').live('click', function(e) {
 	}
 
 	if (strArr.length == 1) {
-		/* Send command event */
-		App.config.socket.emit('command', {
-			'cmd': strArr[0],
-			'arg': "0"});
+		$.ajax({
+			cache: false,
+			type: 'GET',
+			url: '/command',
+			data: {
+				cmd: strArr[0],
+				arg: "0"
+			},
+			error: function() {
+				alert('Error connecting to server');
+			},
+			success: App.onResponse
+		});
 	} else {
-
-		/* Send command event */
-		App.config.socket.emit('command', {
-			'cmd': strArr[0],
-			'arg': strArr[1]});
+		$.ajax({
+                        cache: false,
+                        type: 'GET',
+                        url: '/command',
+                        data: { 
+                                cmd: strArr[0],
+                                arg: strArr[1]
+                        },
+                        error: function() {
+                                alert('Error connecting to server');
+                        },
+                        success: App.onResponse 
+                });
 	}
 
 	return false;
 
 });
 
-/* Connect to IO socket and set IO event callbacks */
-
-App.connectIoSocket = function () {
-
-	App.config.socket = io.connect(window.location.hostname);
-
-	/* We got a connection confirmation event */
-	App.config.socket.on('connected', function(data) {
-		console.log('Connected, this is what I received : ', data);
-	});
-
-	/* We got a response event */
-	App.config.socket.on('response', function (data) {
-		console.log(data);
-		$('#resVal').text('Response: ' + data.toString());
-		App.showResponse();
-	});
-
+App.onResponse = function (response) {
+	if (response.error) {
+		alert ("ERROR: " + response.error);
+		return;
+	}
+	console.log(response);
+	$('#resVal').text('Response: ' + response.data.toString());
+	App.showResponse();
 }
 
 /* Show Command input div */
@@ -113,6 +120,5 @@ App.showResponse = function() {
 
 $(function() {
 	App.showCmdInput();
-	App.connectIoSocket();
 });
 
