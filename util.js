@@ -15,7 +15,6 @@ serial = require('serialport'),
 util = exports;
 
 /* define serial port */
-
 var serialPort = serial.SerialPort;
 var sp = new serialPort(portName, {
 	baudRate: 9600,
@@ -23,6 +22,8 @@ var sp = new serialPort(portName, {
 	parity: 'none',
 	stopBits: 1,
 	flowControl: false
+}, true, function (err) {
+	console.log(err.toString());
 });
 
 /* define serial port event callbacks */
@@ -117,7 +118,7 @@ util.staticHandler = function(filename) {
 
 };
 
-function writeCmdToSerial (data) {
+function writeCmdToSerial (data, res) {
 	var dec = 0;
 
 	if (data.cmd == 'STATUS') {
@@ -132,7 +133,20 @@ function writeCmdToSerial (data) {
 	console.log('DEC: ' + dec + ' HEX: 0x' + dec.toString(16));
 
 	sp.write(String.fromCharCode(dec), function (err, bytesWritten) {
-                console.log('bytes written:', bytesWritten);
+		if (bytesWritten == null) {
+			res.simpleJSON(200, {
+				data: 'KO'
+			});
+		} else if (data.cmd == 'ON' || data.cmd == 'OFF') {
+			res.simpleJSON(200, {
+				data: 'OK'
+			});
+		} else {
+			/* On other cases we need to
+			* wait for the async response */
+			res_ptr = res;
+			req_data = data;
+		}
         });
 }
 
@@ -152,17 +166,6 @@ util.get('/command', function(req, res) {
 
 	console.log("Received command: " + data.cmd);
 	console.log("Received arg: " + data.arg);
-	writeCmdToSerial(data);
-
-	if (data.cmd == 'ON' || data.cmd == 'OFF') {
-		res.simpleJSON(200, {
-			data: 'OK'
-		});
-	} else {
-		/* On other cases we need to 
-		 * wait for the async response */
-		res_ptr = res;
-		req_data = data;
-	}
+	writeCmdToSerial(data, res);
 });
 
