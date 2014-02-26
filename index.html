@@ -16,7 +16,7 @@
 	    <p>If you want to get the current temperature just write TEMP. </p> 
 	    <p>For Relay status just write STATUS. </p> 
             <label for="cmd">Command:</label> 
-            <input id="cmdInput" class="text" type="text" name="cmd" value=""></input> 
+            <input id="cmdInput" class="text" type="text" name="cmd" value="" onfocus="clearField(this);"></input>
             <input id="sendButton" class="button" type="submit" name="" value="Send" ></input> 
           </fieldset> 
         </form> 

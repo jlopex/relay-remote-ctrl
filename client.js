@@ -8,6 +8,10 @@ App.config = {
 
 };
 
+function clearField(input) {
+	input.value = "";
+}
+
 /* Send button click handler */
 
 $('#sendButton').live('click', function(e) {
