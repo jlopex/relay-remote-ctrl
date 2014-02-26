@@ -165,6 +165,9 @@ util.get('/command', function(req, res) {
 
 	var data = qs.parse(url.parse(req.url).query);
 
+	if (data.arg == null || data.arg.length == 0)
+		data.arg = 0;
+
 	console.log("Received command: " + data.cmd);
 	console.log("Received arg: " + data.arg);
 	writeCmdToSerial(data, res);

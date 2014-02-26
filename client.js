@@ -61,36 +61,19 @@ $('#sendButton').live('click', function(e) {
 		}
 	}
 
-	if (strArr.length == 1) {
-		$.ajax({
-			cache: false,
-			type: 'GET',
-			url: '/command',
-			data: {
-				cmd: strArr[0],
-				arg: "0"
-			},
-			error: function() {
-				alert('Error connecting to server');
-			},
-			success: App.onResponse
-		});
-	} else {
-		$.ajax({
-                        cache: false,
-                        type: 'GET',
-                        url: '/command',
-                        data: { 
-                                cmd: strArr[0],
-                                arg: strArr[1]
-                        },
-                        error: function() {
-                                alert('Error connecting to server');
-                        },
-                        success: App.onResponse 
-                });
-	}
-
+	$.ajax({
+		cache: false,
+		type: 'GET',
+		url: '/command',
+		data: {
+			cmd: strArr[0],
+			arg: strArr[1]
+		},
+		error: function() {
+			alert('Error connecting to server');
+		},
+		success: App.onResponse
+	});
 	return false;
 
 });
