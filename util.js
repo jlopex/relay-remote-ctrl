@@ -23,7 +23,8 @@ var sp = new serialPort(portName, {
 	stopBits: 1,
 	flowControl: false
 }, true, function (err) {
-	console.log(err.toString());
+	if (err != null)
+		console.log(err.toString());
 });
 
 /* define serial port event callbacks */
